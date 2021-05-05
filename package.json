@@ -1,0 +1,22 @@
+{
+  "name": "caesar-cipher-cli-tool",
+  "version": "1.0.0",
+  "description": "caesar cipher CLI tool",
+  "main": "caesar-cipher.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IlyaKozak/nodejs-rsschool.git"
+  },
+  "author": "Ilya Kozak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IlyaKozak/nodejs-rsschool/issues"
+  },
+  "homepage": "https://github.com/IlyaKozak/nodejs-rsschool#readme",
+  "dependencies": {
+    "commander": "^7.2.0"
+  }
+}
