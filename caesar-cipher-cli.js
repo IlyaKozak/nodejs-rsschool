@@ -1,9 +1,9 @@
-const { constants } = require('fs');
-const { access } = require('fs/promises');
-const { pipeline, Transform } = require('stream');
+const fs = require('fs');
+const { pipeline } = require('stream');
 
 const options = require('./js/argv-processing');
-const caesarCipherTransform = require('./js/caesar-cipher-transform');
+const createTransformStream = require('./js/streams');
+const checkFileAccess = require('./js/check-file-access');
 
 process.on('exit', (code) => {
   if (code !== 0) {
@@ -11,35 +11,45 @@ process.on('exit', (code) => {
   }
 });
 
-// console.log(access);
+let readStream;
+let writeStream;
 
-// if (options.input) {
-//   try {
-//     await access(options.input, constants.R_OK);
-//   } catch (error) {
-//     console.error(`error: ${err.message}`);
-//     process.exit(1);
-//   }
-// }
-
-// const readStream = fs.createReadStream(options.input);
-// const writeStream = fs.createWriteStream(options.output);
-
-const readStream = process.stdin;
-const writeStream = process.stdout;
-const transformStream = new Transform({
-  transform(chunk, encoding, callback) {
-    const shift = options.action === 'encode' ? options.shift : -options.shift;
-    this.push(caesarCipherTransform(chunk.toString(), shift));
-    callback();
+if (options.input) {
+  if (checkFileAccess(options.input)) {
+    readStream = fs.createReadStream(options.input);
+  } else {
+    console.error(`error: input file can't be reached`);
+    process.exit(1);
   }
-})
+} else {
+  console.log(`Please provide input to ${options.action} (to exit press Ctrl + C):`);
+  readStream = process.stdin;
+}
+
+if (options.output) {
+  if (checkFileAccess(options.output)) {
+    writeStream = fs.createWriteStream(options.output, {
+      flags: 'a', 
+    });
+  } else {
+    console.error(`error: output file can't be reached`);
+    process.exit(1);
+  }
+} else {
+  writeStream = process.stdout;
+}
+
+const transformStream = createTransformStream(options.action, options.shift);
 
 pipeline(
   readStream,
   transformStream,
   writeStream,
   (err) => {
-    console.log(err);
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('success');
+    }
   }
-)
+);
