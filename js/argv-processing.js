@@ -9,7 +9,7 @@ const shiftOption = new Option('-s, --shift <number>', 'shift value (required)')
   .argParser((value) => {
     const number = Number(value);
 
-    if (Number.isNaN(number)) {
+    if (Number.isNaN(number) || !Number.isInteger(number)) {
       throw new program.InvalidOptionArgumentError('Shift is not a valid integer number.');
     }
 

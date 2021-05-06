@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { pipeline } = require('stream');
 
 const options = require('./js/argv-processing');
@@ -14,21 +15,9 @@ process.on('exit', (code) => {
 let readStream;
 let writeStream;
 
-if (options.input) {
-  if (checkFileAccess(options.input)) {
-    readStream = fs.createReadStream(options.input);
-  } else {
-    console.error(`error: input file can't be reached`);
-    process.exit(1);
-  }
-} else {
-  console.log(`Please provide input to ${options.action} (to exit press Ctrl + C):`);
-  readStream = process.stdin;
-}
-
 if (options.output) {
-  if (checkFileAccess(options.output)) {
-    writeStream = fs.createWriteStream(options.output, {
+  if (checkFileAccess(options.output, 'write')) {
+    writeStream = fs.createWriteStream(path.resolve(options.output), {
       flags: 'a', 
     });
   } else {
@@ -39,7 +28,19 @@ if (options.output) {
   writeStream = process.stdout;
 }
 
-const transformStream = createTransformStream(options.action, options.shift);
+if (options.input) {
+  if (checkFileAccess(options.input, 'read')) {
+    readStream = fs.createReadStream(path.resolve(options.input));
+  } else {
+    console.error(`error: input file can't be reached`);
+    process.exit(1);
+  }
+} else {
+  console.log(`Please provide input to ${options.action} (to exit press Ctrl + C):`);
+  readStream = process.stdin;
+}
+
+const transformStream = createTransformStream(options);
 
 pipeline(
   readStream,
