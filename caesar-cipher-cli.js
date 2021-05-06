@@ -5,12 +5,7 @@ const { pipeline } = require('stream');
 const options = require('./js/argv-processing');
 const createTransformStream = require('./js/streams');
 const checkFileAccess = require('./js/check-file-access');
-
-process.on('exit', (code) => {
-  if (code !== 0) {
-    console.log('process exit status code:', code);
-  }
-});
+const { errorColor } = require('./js/utils');
 
 let readStream;
 let writeStream;
@@ -21,7 +16,7 @@ if (options.output) {
       flags: 'a', 
     });
   } else {
-    console.error(`error: output file can't be reached`);
+    process.stderr.write(`error: output file "${options.output}" can't be reached\n`);
     process.exit(1);
   }
 } else {
@@ -32,11 +27,11 @@ if (options.input) {
   if (checkFileAccess(options.input, 'read')) {
     readStream = fs.createReadStream(path.resolve(options.input));
   } else {
-    console.error(`error: input file can't be reached`);
+    process.stderr.write(errorColor(`error: input file "${options.input}" can't be reached\n`));
     process.exit(1);
   }
 } else {
-  console.log(`Please provide input to ${options.action} (to exit press Ctrl + C):`);
+  process.stdout.write(`Please provide input to ${options.action} (to exit press Ctrl + C): `);
   readStream = process.stdin;
 }
 
@@ -48,9 +43,7 @@ pipeline(
   writeStream,
   (err) => {
     if (err) {
-      console.log(err);
-    } else {
-      console.log('success');
+      process.stderr.write(errorColor(`error: ${err.message}\n`));
     }
   }
 );

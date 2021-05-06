@@ -1,5 +1,7 @@
 const { program, Option } = require('commander');
 
+const { errorColor } = require('./utils');
+
 const actionOption = new Option('-a, --action <encode|decode>', 'action type (required)')
   .choices(['encode', 'decode'])
   .makeOptionMandatory();
@@ -28,7 +30,20 @@ program
 
 program.addHelpText('before', 'Caesar Cipher CLI Tool.\nEncodes and decodes a text by Caesar cipher.');
 
-program.parse(process.argv);
+program.exitOverride();
+
+program
+  .configureOutput({
+    writeOut: (str) => process.stdout.write(str),
+    writeErr: (str) => process.stdout.write(str),
+    outputError: (str, write) => write(errorColor(str))
+  });
+
+try {
+  program.parse(process.argv);
+} catch (error) {
+  process.exit(1);
+}
 
 const options = program.opts();
 

@@ -1,10 +1,12 @@
-Caesar Cipher CLI Tool.
+# Caesar Cipher CLI Tool
+
+
 Encodes and decodes a text by Caesar cipher.
 
 To get started: npm install
 To get help: npm start or node caesar-cipher-cli --help
 
-Options:
+You can Options:
   -a, --action <encode|decode>  action type (required) (choices: "encode", "decode")
   -s, --shift <number>          shift value (required)
   -i, --input <filepath>        input file (optional)
