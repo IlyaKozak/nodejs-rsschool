@@ -11,24 +11,18 @@ let readStream;
 let writeStream;
 
 if (options.output) {
-  if (checkFileAccess(options.output, 'write')) {
+  if (checkFileAccess(options.output, 'output')) {
     writeStream = fs.createWriteStream(path.resolve(options.output), {
       flags: 'a', 
     });
-  } else {
-    process.stderr.write(`error: output file "${options.output}" can't be reached\n`);
-    process.exit(1);
   }
 } else {
   writeStream = process.stdout;
 }
 
 if (options.input) {
-  if (checkFileAccess(options.input, 'read')) {
+  if (checkFileAccess(options.input, 'input')) {
     readStream = fs.createReadStream(path.resolve(options.input));
-  } else {
-    process.stderr.write(errorColor(`error: input file "${options.input}" can't be reached\n`));
-    process.exit(1);
   }
 } else {
   process.stdout.write(`Please provide input to ${options.action} (to exit press Ctrl + C): `);
