@@ -2,11 +2,11 @@ const { program, Option } = require('commander');
 
 const { errorColor } = require('./utils');
 
-const actionOption = new Option('-a, --action <encode|decode>', 'action type (required)')
+const actionOption = new Option('-a, --action <encode|decode>', 'choose action (required)')
   .choices(['encode', 'decode'])
   .makeOptionMandatory();
 
-const shiftOption = new Option('-s, --shift <number>', 'shift value (required)')
+const shiftOption = new Option('-s, --shift <number>', 'choose cipher\'s key - shift integer value (required)')
   .makeOptionMandatory()
   .argParser((value) => {
     const number = Number(value);
@@ -18,9 +18,9 @@ const shiftOption = new Option('-s, --shift <number>', 'shift value (required)')
     return number;
   });
 
-const inputOption = new Option('-i, --input <filepath>', 'input file (optional)');
+const inputOption = new Option('-i, --input <filepath>', 'choose input file (default input from `stdin`) (optional)');
 
-const outputOption = new Option('-o, --output <filepath>', 'output file (optional)');
+const outputOption = new Option('-o, --output <filepath>', 'choose output file (default output to `stdout`) (optional)');
 
 program
   .addOption(actionOption)
